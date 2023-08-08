@@ -1,17 +1,23 @@
 import { FormEvent, useState } from "react";
 
 import { Modal } from ".";
+import { Client } from "../interfaces";
 import { useCreateCustomer } from "../api";
 
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
+	getCustomersInfo: () => void;
 }
 
-export const CreateClientModal = ({ isOpen, onClose }: Props) => {
+export const CreateClientModal = ({
+	isOpen,
+	onClose,
+	getCustomersInfo,
+}: Props) => {
 	const createCustomer = useCreateCustomer();
 
-	const [info, setInfo] = useState({
+	const [info, setInfo] = useState<Omit<Client, "customerId">>({
 		name: "",
 		curp: "",
 		gender: "",
@@ -23,7 +29,22 @@ export const CreateClientModal = ({ isOpen, onClose }: Props) => {
 
 		createCustomer.mutate(info, {
 			onSuccess: (received) => {
-				alert(`Usuario ${received.information.customerId} registrado correctamente.`);
+				alert(
+					`Usuario ${received.information.customerId} registrado correctamente.`,
+				);
+
+				// Limpiando la información del formulario, 
+				// cerrando el modal y recargando la información de los clientes.
+				setInfo({
+					name: "",
+					curp: "",
+					gender: "",
+					birthdate: "",
+				});
+
+				onClose();
+
+				getCustomersInfo();
 			},
 		});
 	};
@@ -48,6 +69,7 @@ export const CreateClientModal = ({ isOpen, onClose }: Props) => {
 						onChange={(e) =>
 							setInfo({ ...info, name: e.target.value })
 						}
+						value={info.name}
 					/>
 				</div>
 				<div className="mb-6">
@@ -67,6 +89,7 @@ export const CreateClientModal = ({ isOpen, onClose }: Props) => {
 						onChange={(e) =>
 							setInfo({ ...info, curp: e.target.value })
 						}
+						value={info.curp}
 					/>
 				</div>
 				<div className="mb-6">
@@ -109,6 +132,7 @@ export const CreateClientModal = ({ isOpen, onClose }: Props) => {
 						onChange={(e) =>
 							setInfo({ ...info, birthdate: e.target.value })
 						}
+						value={info.birthdate}
 					/>
 				</div>
 				<button

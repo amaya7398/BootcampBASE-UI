@@ -22,8 +22,8 @@ export const useCreateCustomer = () => {
 	return useMutation({
 		mutationKey: ["Customers"],
 		mutationFn: async (customer: Omit<Client, "customerId">) => {
-			const { data } = await httpClient.post<ClientDTO>("/customer", {
-				customer,
+			const { data } = await httpClient.post<ClientDTO>("/customers", {
+				...customer,
 			});
 
 			return data;

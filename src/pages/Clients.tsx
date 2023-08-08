@@ -47,9 +47,7 @@ export const Clients = () => {
 	const { isError, isLoading, mutate } = useGetCustomers();
 
 	useEffect(() => {
-		mutate(search, {
-			onSuccess: (data) => setClients(data),
-		});
+		getCustomersInfo();
 	}, [search]);
 
 	const handleDropdown = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -57,9 +55,15 @@ export const Clients = () => {
 		setClients(orderClients(clients, e.target.value));
 	};
 
+	const getCustomersInfo = () => {
+		mutate(search, {
+			onSuccess: (data) => setClients(data),
+		});
+	};
+
 	return (
 		<>
-			<CreateClientModal isOpen={isOpen} onClose={() => toogleIsOpen()} />
+			<CreateClientModal isOpen={isOpen} getCustomersInfo={getCustomersInfo} onClose={() => toogleIsOpen()} />
 
 			<Header>
 				<h1 className="text-3xl font-bold tracking-tight text-gray-900">
