@@ -1,4 +1,7 @@
+import { FormEvent, useState } from "react";
+
 import { Modal } from ".";
+import { useCreateCustomer } from "../api";
 
 interface Props {
 	isOpen: boolean;
@@ -6,9 +9,28 @@ interface Props {
 }
 
 export const CreateClientModal = ({ isOpen, onClose }: Props) => {
+	const createCustomer = useCreateCustomer();
+
+	const [info, setInfo] = useState({
+		name: "",
+		curp: "",
+		gender: "",
+		birthdate: "",
+	});
+
+	const submitForm = (e: FormEvent) => {
+		e.preventDefault();
+
+		createCustomer.mutate(info, {
+			onSuccess: (received) => {
+				alert(`Usuario ${received.information.customerId} registrado correctamente.`);
+			},
+		});
+	};
+
 	return (
 		<Modal isOpen={isOpen} onClose={onClose}>
-			<form>
+			<form onSubmit={submitForm}>
 				<div className="mb-6">
 					<label
 						htmlFor="name"
@@ -23,6 +45,9 @@ export const CreateClientModal = ({ isOpen, onClose }: Props) => {
 						required
 						name="name"
 						type="text"
+						onChange={(e) =>
+							setInfo({ ...info, name: e.target.value })
+						}
 					/>
 				</div>
 				<div className="mb-6">
@@ -39,6 +64,9 @@ export const CreateClientModal = ({ isOpen, onClose }: Props) => {
 						required
 						name="curp"
 						type="text"
+						onChange={(e) =>
+							setInfo({ ...info, curp: e.target.value })
+						}
 					/>
 				</div>
 				<div className="mb-6">
@@ -53,7 +81,14 @@ export const CreateClientModal = ({ isOpen, onClose }: Props) => {
 						id="gender"
 						required
 						name="gender"
+						onChange={(e) =>
+							setInfo({ ...info, gender: e.target.value })
+						}
+						value={info.gender}
 					>
+						<option value="" disabled>
+							Seleccione
+						</option>
 						<option value="HOMBRE">Masculino</option>
 						<option value="MUJER">Femenino</option>
 					</select>
@@ -71,10 +106,14 @@ export const CreateClientModal = ({ isOpen, onClose }: Props) => {
 						required
 						name="birthdate"
 						type="date"
+						onChange={(e) =>
+							setInfo({ ...info, birthdate: e.target.value })
+						}
 					/>
 				</div>
 				<button
 					type="submit"
+					onClick={submitForm}
 					className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
 				>
 					Añadir cliente
