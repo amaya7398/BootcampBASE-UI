@@ -2,15 +2,35 @@ import { IconPlus } from "@tabler/icons-react";
 import { useParams } from "react-router-dom";
 
 import { Header } from "../components/Header";
+import { useGetCustomerById } from "../api";
+import { useEffect, useState } from "react";
+import { Client as IClient } from "../interfaces";
 
 export const Client = () => {
-	const { id } = useParams();
+	const { id } = useParams<string>();
+	const [customer, setCustomer] = useState<IClient>({
+		customerId: 0,
+		name: "",
+		curp: "",
+		gender: "",
+		birthdate: "",
+	});
+
+	const getCustomerById = useGetCustomerById();
+	// const getAccountsByCustomerId = useGetAccpuntsByCustomerId();
+
+
+	useEffect(() => {
+		getCustomerById.mutate(id, {
+			onSuccess: (data) => setCustomer({ ...data }),
+		})
+	}, [])
 
 	return (
 		<>
 			<Header>
 				<h1 className="text-3xl font-bold tracking-tight text-gray-900 text-center">
-					Nombre del cliente {/* Reemplazar con el nombre del cliente */}
+					{customer.name}
 				</h1>
 			</Header>
 

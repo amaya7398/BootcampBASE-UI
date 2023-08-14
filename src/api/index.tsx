@@ -30,3 +30,13 @@ export const useCreateCustomer = () => {
 		},
 	});
 };
+
+export const useGetCustomerById = () => {
+	return useMutation({
+		mutationKey: ["Customer"],
+		mutationFn: async (customerId: string) => {
+			const { data } = await httpClient.get<Client>(`/customers/${customerId}`, {});
+			return data;
+		}
+	})
+}
