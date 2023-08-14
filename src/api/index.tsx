@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { Client, ClientDTO } from "../interfaces";
+import { Account, Client, ClientDTO } from "../interfaces";
 
 import { httpClient } from "../http";
 
@@ -39,4 +39,14 @@ export const useGetCustomerById = () => {
 			return data;
 		}
 	})
+}
+
+export const useGetAccountsOfCustomerById = () => {
+	return useMutation({
+		mutationKey: ["Accounts"],
+		mutationFn: async (customerId: number) => {
+			const { data } = await httpClient.get<Account[]>(`/accounts/${customerId}`);
+			return data;
+		}
+	});
 }

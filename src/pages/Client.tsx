@@ -2,9 +2,11 @@ import { IconPlus } from "@tabler/icons-react";
 import { useParams } from "react-router-dom";
 
 import { Header } from "../components/Header";
-import { useGetCustomerById } from "../api";
+import { useGetAccountsOfCustomerById, useGetCustomerById } from "../api";
 import { useEffect, useState } from "react";
-import { Client as IClient } from "../interfaces";
+import { Account, Client as IClient } from "../interfaces";
+import { CreditCard } from "../components";
+import { FetchingData } from "../components/FetchingData";
 
 export const Client = () => {
 	const { id } = useParams<string>();
@@ -15,16 +17,27 @@ export const Client = () => {
 		gender: "",
 		birthdate: "",
 	});
+	const [accounts, setAccounts] = useState<Account[]>([]);
 
 	const getCustomerById = useGetCustomerById();
-	// const getAccountsByCustomerId = useGetAccpuntsByCustomerId();
+	const { isLoading, isError, mutate: mutateAccountsById } = useGetAccountsOfCustomerById();
 
 
 	useEffect(() => {
+		getCustomerInfo();
+		getAccountsInfo();
+	}, [])
+
+	const getCustomerInfo = () => {
 		getCustomerById.mutate(id, {
 			onSuccess: (data) => setCustomer({ ...data }),
 		})
-	}, [])
+	}
+	const getAccountsInfo = () => {
+		mutateAccountsById(id, {
+			onSuccess: data => setAccounts(data),
+		})
+	}
 
 	return (
 		<>
@@ -35,9 +48,13 @@ export const Client = () => {
 			</Header>
 
 			<section className="flex flex-col items-center h-[calc(100vh-10rem)] mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-				<ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 py-7 w-full">
-					{/* Renderizar el arreglo de cuentas del cliente utilizando el componente CreditCard */}
-				</ul>
+				<FetchingData isLoading={isLoading} isError={isError}>
+					<ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 py-7 w-full">
+						{accounts.map((acc, idx) => (
+							<CreditCard name={customer.name} cardNumber={acc.accountNumber} balance={acc.balance} key={idx}></CreditCard>
+						))}
+					</ul>
+				</FetchingData>
 			</section>
 
 			<button className="fixed right-8 bottom-8 p-3 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
