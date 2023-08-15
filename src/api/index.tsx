@@ -1,8 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { Account, Client, ClientDTO } from "../interfaces";
+import { Account, Client, ClientDTO, Currency } from "../interfaces";
 
 import { httpClient } from "../http";
 
+//Customer Controller =====================================================
 export const useGetCustomers = () => {
 	return useMutation({
 		mutationKey: ["Customers"],
@@ -40,13 +41,29 @@ export const useGetCustomerById = () => {
 		}
 	})
 }
+//FIN Customer Controller =====================================================
 
+//Account Controller =====================================================
 export const useGetAccountsOfCustomerById = () => {
 	return useMutation({
 		mutationKey: ["Accounts"],
-		mutationFn: async (customerId: number) => {
-			const { data } = await httpClient.get<Account[]>(`/accounts/${customerId}`);
+		mutationFn: async (customerId: string) => {
+			const newCustomerId = parseInt(customerId);
+			const { data } = await httpClient.get<Account[]>(`/accounts/${newCustomerId}`);
 			return data;
 		}
 	});
 }
+//FIN Account Controller =====================================================
+
+//Currencies Controller =====================================================
+export const useGetCurrencies = () => {
+	return useMutation({
+		mutationKey: ["Currencies"],
+		mutationFn: async (symbol: string) => {
+			const { data } = await httpClient.get<Currency[]>("/currency")
+			return data;
+		}
+	})
+}
+//FIN Currencies Controller =====================================================

@@ -9,7 +9,7 @@ import { CreditCard } from "../components";
 import { FetchingData } from "../components/FetchingData";
 
 export const Client = () => {
-	const { id } = useParams<string>();
+	const { id = "" } = useParams<string>();
 	const [customer, setCustomer] = useState<IClient>({
 		customerId: 0,
 		name: "",

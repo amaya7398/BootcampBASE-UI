@@ -4,6 +4,8 @@ interface Props {
 	balance: number;
 }
 
+import mastercard from "../assets/mastercard.png"
+
 export const CreditCard = ({ name, cardNumber, balance }: Props) => {
 	return (
 		<li className="max-w-md h-64 bg-red-100 rounded-xl relative text-white shadow-2xl mx-auto">
@@ -20,7 +22,7 @@ export const CreditCard = ({ name, cardNumber, balance }: Props) => {
 					</div>
 					<img
 						className="w-14 h-14"
-						src="https://i.imgur.com/bbPHJVe.png"
+						src={mastercard}
 					/>
 				</div>
 

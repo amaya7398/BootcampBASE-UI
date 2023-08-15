@@ -3,6 +3,8 @@ import { Currency, DropdownOrderBy, Header, SearchInput } from "../components";
 import { useEffect, useState } from "react";
 import { Currency as ICurrency } from "../interfaces"
 import { currenciesMock } from "../mocks";
+import { useGetCurrencies } from "../api";
+import { FetchingData } from "../components/FetchingData";
 
 export const Currencies = () => {
 	const [currencies, setCurrencies] = useState<ICurrency[]>([]);
@@ -13,10 +15,18 @@ export const Currencies = () => {
 		{ label: "Valor", value: "value", },
 	];
 
+	const { isError, isLoading, mutate: mutateCurrencies } = useGetCurrencies();
+
 	useEffect(() => {
-		setCurrencies(currenciesMock);
+		getCurrencies();
 		setCurrencies((prevState) => orderCurrencies(prevState, currentOrderOption));
 	}, [])
+
+	const getCurrencies = () => {
+		mutateCurrencies("MXN", {
+			onSuccess: data => setCurrencies(data),
+		})
+	}
 
 	const orderCurrencies = (currencies: ICurrency[], currentOrderOption: string): ICurrency[] => {
 		const key = currentOrderOption as keyof ICurrency;
@@ -30,12 +40,15 @@ export const Currencies = () => {
 
 	const handleSearch = (searchWord: string) => {
 		if (searchWord === "") {
-			setCurrencies(orderCurrencies(currenciesMock, currentOrderOption));
+			getCurrencies();
+			setCurrencies((prevState) => orderCurrencies(prevState, currentOrderOption));
+			// setCurrencies(orderCurrencies(currenciesMock, currentOrderOption));
 		} else {
+			const searchWordLowerCase = searchWord.toLowerCase();
 			const newCurrencies = currencies.filter(currency => {
-				return (currency.name.toLowerCase().includes(searchWord.toLowerCase())
-					|| currency.symbol.toLowerCase().includes(searchWord.toLowerCase())
-					|| currency.value.toString().toLowerCase().includes(searchWord.toLowerCase())
+				return (currency.name.toLowerCase().includes(searchWordLowerCase)
+					|| currency.symbol.toLowerCase().includes(searchWordLowerCase)
+					|| currency.value.toString().toLowerCase().includes(searchWordLowerCase)
 				)
 			})
 			setCurrencies(newCurrencies);
@@ -68,27 +81,14 @@ export const Currencies = () => {
 			</Header>
 
 			<section className="flex flex-col items-center h-[calc(100vh-10rem)] mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-				<ul
-					role="list"
-					className="grid w-full gap-3 overflow-auto divide-y divide-gray-100 sm:grid-cols-2 xl:grid-cols-4 my-7"
-				>
-					{
-						currencies.length === 0
-							? (<div className="flex flex-col items-center justify-center h-full">
-								<p className="text-3xl font-bold text-center">
-									¡Oh no! :(
-								</p>
-								<p className="mt-5 text-lg text-center">
-									Algo no ha salido como esperabamos. Por favor,
-									intentalo más tarde.
-								</p>
-							</div>)
-							: (currencies.map((currency, idx) => {
-								return <Currency currency={currency} key={idx} />
-							}))
-					}
+				<FetchingData isLoading={isLoading} isError={isError}>
+					<ul role="list" className="grid w-full gap-3 overflow-auto divide-y divide-gray-100 sm:grid-cols-2 xl:grid-cols-4 my-7">
+						{currencies.map((currency, idx) =>
+							<Currency currency={currency} key={idx} />
+						)}
+					</ul>
+				</FetchingData>
 
-				</ul>
 			</section>
 		</>
 	);
