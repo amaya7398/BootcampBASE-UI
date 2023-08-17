@@ -2,7 +2,6 @@ import { IconCoin } from "@tabler/icons-react";
 import { Currency, DropdownOrderBy, Header, SearchInput } from "../components";
 import { useEffect, useState } from "react";
 import { Currency as ICurrency } from "../interfaces"
-import { currenciesMock } from "../mocks";
 import { useGetCurrencies } from "../api";
 import { FetchingData } from "../components/FetchingData";
 

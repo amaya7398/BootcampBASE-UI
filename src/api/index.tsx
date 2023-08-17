@@ -61,6 +61,7 @@ export const useGetCurrencies = () => {
 	return useMutation({
 		mutationKey: ["Currencies"],
 		mutationFn: async (symbol: string) => {
+			console.log("symbol", symbol);
 			const { data } = await httpClient.get<Currency[]>("/currency")
 			return data;
 		}
